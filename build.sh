@@ -28,8 +28,8 @@ if ! command -v scons >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; t
   apt-get install -y -qq scons python3 python3-distutils
 fi
 
-# >>> Rétablissement et ajustement de l'exportation explicite :
-# Nous exportons le chemin du binaire ET le chemin du répertoire parent pour maximiser la visibilité dans Gradle.
+# >>> Préparation du chemin SCons pour le Patch <<<
+# Nous obtenons le chemin absolu du binaire SCons
 SCONS_BIN="$(command -v scons || true)"
 if [ -z "${SCONS_BIN}" ]; then
   echo "ERREUR: scons introuvable après vérification du PATH." >&2
@@ -39,10 +39,9 @@ fi
 SCONS_DIR="$(dirname "${SCONS_BIN}")"
 
 echo "SCons est disponible à: ${SCONS_BIN}"
-# Exportation explicite :
+# Nous maintenons les exports pour la compatibilité, mais le patch sera décisif.
 export SCONS="${SCONS_BIN}" 
 export SCONS_EXECUTABLE="${SCONS_BIN}" 
-# Ajout de SCONS_PATH pointant vers le répertoire (une convention Godot)
 export SCONS_PATH="${SCONS_DIR}"
 
 
@@ -56,6 +55,16 @@ pushd "${GODOT_SRC_DIR}" >/dev/null
   git fetch --tags --depth=1 origin "${GODOT_REF}"
   git reset --hard "${GODOT_REF}"
 popd >/dev/null
+
+# NOUVELLE ÉTAPE DE PATCHING
+echo ">> Patching build.gradle pour forcer le chemin SCons..."
+GODOT_GRADLE_FILE="${GODOT_SRC_DIR}/platform/android/java/lib/build.gradle"
+# Le fichier Gradle utilise 'scons' sans chemin. Nous le remplaçons par le chemin absolu.
+# C'est la ligne qui cause FAILURE: Build failed with an exception.
+# La commande sed remplace toutes les occurrences de 'scons' dans les blocs 'commandLine' par le chemin absolu.
+# Cela garantit que Gradle utilise le chemin que nous avons trouvé dans le shell.
+sed -i "s|commandLine 'scons'|commandLine '${SCONS_BIN}'|" "${GODOT_GRADLE_FILE}"
+
 
 # 2) Build de l’AAR Godot
 echo "[2/3] Build godot-lib.aar (release)..."
