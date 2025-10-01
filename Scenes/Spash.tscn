@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://ck38w8iaw66yk"]
+
+[ext_resource type="Script" uid="uid://r4ptxgyikwmq" path="res://Scripts/splash.gd" id="1_0cq0e"]
+[ext_resource type="Texture2D" uid="uid://c01ay5wqsv7yg" path="res://Logo.png" id="2_8jj2v"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0cq0e")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="TextureRectLogo" type="TextureRect" parent="CanvasLayer"]
+offset_left = 368.0
+offset_top = 115.0
+offset_right = 869.0
+offset_bottom = 616.0
+texture = ExtResource("2_8jj2v")
+expand_mode = 1

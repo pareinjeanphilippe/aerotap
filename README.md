@@ -1,2 +1,2 @@
-# aerotap
-Jeu Godot Android open source
+# aero-tap
+Jeu Godot AeroTap

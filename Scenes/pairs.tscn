@@ -1,0 +1,52 @@
+[gd_scene load_steps=9 format=3 uid="uid://g1f2sn3qejli"]
+
+[ext_resource type="Texture2D" uid="uid://dnbnxhwewrbqs" path="res://tappyplane/PNG/rockGrassDown.png" id="1_4jsbv"]
+[ext_resource type="Script" uid="uid://bgwe8tcnwbg2c" path="res://Scripts/pairs.gd" id="1_wns6o"]
+[ext_resource type="Texture2D" uid="uid://ros1k2sg0g1j" path="res://tappyplane/PNG/rockSnowDown.png" id="2_8snhe"]
+[ext_resource type="Texture2D" uid="uid://w6dws6yd5li2" path="res://tappyplane/PNG/rockGrass.png" id="2_wns6o"]
+[ext_resource type="Texture2D" uid="uid://boon5go7x46k" path="res://tappyplane/PNG/rockDown.png" id="4_vfl8w"]
+[ext_resource type="Texture2D" uid="uid://bmdh5o1521ydf" path="res://tappyplane/PNG/rock.png" id="5_2ljpm"]
+[ext_resource type="Texture2D" uid="uid://drytlrv73vula" path="res://tappyplane/PNG/rockSnow.png" id="7_tfcog"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2ljpm"]
+size = Vector2(14.5, 626.5)
+
+[node name="Pairs" type="Node2D" groups=["pairs"]]
+script = ExtResource("1_wns6o")
+mountain_top = Array[Texture2D]([ExtResource("2_8snhe"), ExtResource("1_4jsbv"), ExtResource("4_vfl8w")])
+mountain_bottom = Array[Texture2D]([ExtResource("5_2ljpm"), ExtResource("2_wns6o"), ExtResource("7_tfcog")])
+
+[node name="Top" type="Sprite2D" parent="."]
+position = Vector2(335.00003, -300)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("1_4jsbv")
+
+[node name="Area2D" type="Area2D" parent="Top" groups=["obstacle"]]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Top/Area2D"]
+position = Vector2(-47, -117)
+polygon = PackedVector2Array(0, 0, 101, -1, 59, 245)
+
+[node name="Bottom" type="Sprite2D" parent="."]
+position = Vector2(0, 300)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("2_wns6o")
+
+[node name="Area2D" type="Area2D" parent="Bottom" groups=["obstacle"]]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Bottom/Area2D"]
+polygon = PackedVector2Array(-51, 116, 12, -121, 53, 117)
+
+[node name="Area2D" type="Area2D" parent="." groups=["scoring"]]
+monitoring = false
+
+[node name="AreaTop" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(19.25, -201.75)
+shape = SubResource("RectangleShape2D_2ljpm")
+
+[node name="Area2D2" type="Area2D" parent="." groups=["scoring"]]
+monitoring = false
+
+[node name="AreaBottom" type="CollisionShape2D" parent="Area2D2"]
+position = Vector2(354, 219)
+shape = SubResource("RectangleShape2D_2ljpm")

@@ -1,0 +1,543 @@
+[gd_scene load_steps=45 format=3 uid="uid://csgjl6yvbyo7m"]
+
+[ext_resource type="Shader" uid="uid://csoskjdt45unt" path="res://Scripts/Background.gdshader" id="1_gl6un"]
+[ext_resource type="Texture2D" uid="uid://b5strgf4o0tf7" path="res://tappyplane/PNG/background.png" id="1_iukft"]
+[ext_resource type="Texture2D" uid="uid://xujkowr2yvmu" path="res://tappyplane/PNG/UI/UIbg.png" id="2_x3xnh"]
+[ext_resource type="Texture2D" uid="uid://llxvrqbemd80" path="res://tappyplane/PNG/UI/textGameOver.png" id="3_8r6kd"]
+[ext_resource type="Script" uid="uid://cst7nhvj4wsro" path="res://Scripts/background.gd" id="3_j5yw3"]
+[ext_resource type="Texture2D" uid="uid://bigbo2pspe05c" path="res://tappyplane/PNG/groundDirt.png" id="4_71axn"]
+[ext_resource type="Script" uid="uid://dukck22mqfk56" path="res://Scripts/plane.gd" id="4_fgofq"]
+[ext_resource type="Texture2D" uid="uid://cg8i14rb04rfh" path="res://tappyplane/PNG/Planes/planeYellow1.png" id="4_kldst"]
+[ext_resource type="FontFile" uid="uid://bqmar4a4i10y0" path="res://tappyplane/Font/kenvector_future.ttf" id="4_rajel"]
+[ext_resource type="Texture2D" uid="uid://ddfs0npm2xwrn" path="res://tappyplane/PNG/Planes/planeYellow2.png" id="5_7lihs"]
+[ext_resource type="Texture2D" uid="uid://cfmx1fobkylgu" path="res://tappyplane/PNG/UI/medal.png" id="5_vvhu1"]
+[ext_resource type="Texture2D" uid="uid://dydeal5v1n6rd" path="res://tappyplane/PNG/Planes/planeYellow3.png" id="6_fgofq"]
+[ext_resource type="Texture2D" uid="uid://wrructfmu3q4" path="res://tappyplane/PNG/UI/buttonLarge.png" id="6_vvhu1"]
+[ext_resource type="Script" uid="uid://b7drb3qkw5hac" path="res://Scripts/spawner.gd" id="8_2irst"]
+[ext_resource type="Texture2D" uid="uid://ckw7rmbxhgila" path="res://tappyplane/PNG/UI/tapLeft.png" id="9_3so38"]
+[ext_resource type="PackedScene" uid="uid://g1f2sn3qejli" path="res://Scenes/pairs.tscn" id="9_bf53h"]
+[ext_resource type="Texture2D" uid="uid://jid71vqyfow7" path="res://tappyplane/PNG/UI/tapRight.png" id="10_3cx6b"]
+[ext_resource type="Texture2D" uid="uid://euwrrx7xnbr" path="res://tappyplane/PNG/UI/tapTick.png" id="11_3cx6b"]
+[ext_resource type="Texture2D" uid="uid://cu7m3g1kpar2f" path="res://tappyplane/PNG/UI/medalBronze.png" id="12_8e0uq"]
+[ext_resource type="Texture2D" uid="uid://dtihbf2rbmm4c" path="res://tappyplane/PNG/UI/medalSilver.png" id="13_i0vto"]
+[ext_resource type="Texture2D" uid="uid://c871nlgb4vi00" path="res://tappyplane/PNG/UI/medalGold.png" id="14_3jf1l"]
+[ext_resource type="FontFile" uid="uid://da4apvf2mjs5w" path="res://tappyplane/Font/kenvector_future_thin.ttf" id="14_wxwew"]
+[ext_resource type="Script" uid="uid://bp5mdmjtehvw6" path="res://Scripts/sfx_sound.gd" id="16_alh3a"]
+[ext_resource type="Texture2D" uid="uid://cg834lgr84k61" path="res://tappyplane/PNG/UI/textGetReady.png" id="21_i0vto"]
+[ext_resource type="AudioStream" uid="uid://pixrng4vl8lr" path="res://kenney_interface-sounds/Audio/drop_001.ogg" id="25_i0vto"]
+[ext_resource type="AudioStream" uid="uid://bs86gfm0tw0f2" path="res://kenney_sci-fi-sounds/Audio/explosionCrunch_000.ogg" id="26_3jf1l"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vvhu1"]
+texture = ExtResource("6_vvhu1")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_raj38"]
+texture = ExtResource("6_vvhu1")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lbihj"]
+texture = ExtResource("6_vvhu1")
+
+[sub_resource type="Animation" id="Animation_vvhu1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(426, -436)]
+}
+
+[sub_resource type="Animation" id="Animation_rajel"]
+resource_name = "Show"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(426, -382), Vector2(426, 212)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lbihj"]
+_data = {
+&"RESET": SubResource("Animation_vvhu1"),
+&"Show": SubResource("Animation_rajel")
+}
+
+[sub_resource type="SystemFont" id="SystemFont_i0vto"]
+font_italic = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j5yw3"]
+shader = ExtResource("1_gl6un")
+shader_parameter/scroll_speed = 0.1
+shader_parameter/game_time = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_71axn"]
+shader = ExtResource("1_gl6un")
+shader_parameter/scroll_speed = 0.1
+shader_parameter/game_time = 0.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wxwew"]
+radius = 32.142853
+height = 81.42862
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bf53h"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_kldst")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_7lihs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_fgofq")
+}],
+"loop": true,
+"name": &"Fly",
+"speed": 15.0
+}]
+
+[sub_resource type="Animation" id="Animation_3cx6b"]
+resource_name = "Blink"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.19999999),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_wxwew"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_acvyw"]
+_data = {
+&"Blink": SubResource("Animation_3cx6b"),
+&"RESET": SubResource("Animation_wxwew")
+}
+
+[sub_resource type="Animation" id="Animation_i0vto"]
+resource_name = "Getready"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Get Ready:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.23333335),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(8.571424, -289.2857), Vector2(8.571424, -87.85715)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Right:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.23333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(814.28577, 0), Vector2(100, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Left:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.23333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-211.42859, 0), Vector2(-100, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_3jf1l"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Get Ready:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(8.571424, -87.85715)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Right:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(100, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Left:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-100, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_356ba"]
+_data = {
+&"Getready": SubResource("Animation_i0vto"),
+&"RESET": SubResource("Animation_3jf1l")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i0vto"]
+size = Vector2(1296, 24)
+
+[node name="Game" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="LabelScore" type="Label" parent="CanvasLayer"]
+offset_left = 881.0
+offset_top = 9.0
+offset_right = 1253.0
+offset_bottom = 282.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/shadow_offset_x = 7
+theme_override_constants/shadow_offset_y = 7
+theme_override_constants/outline_size = 23
+theme_override_fonts/font = ExtResource("14_wxwew")
+theme_override_font_sizes/font_size = 120
+text = "0
+"
+horizontal_alignment = 2
+
+[node name="TextureRectGameOver" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -214.0
+offset_top = -796.0
+offset_right = 204.0
+offset_bottom = -522.99994
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_x3xnh")
+
+[node name="ButtonPlay" type="Button" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 295.0
+offset_right = 416.0
+offset_bottom = 362.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/outline_size = 22
+theme_override_fonts/font = ExtResource("14_wxwew")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_vvhu1")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_raj38")
+theme_override_styles/hover = SubResource("StyleBoxTexture_lbihj")
+text = "PLAY"
+
+[node name="ButtonExit" type="Button" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 295.0
+offset_right = 179.0
+offset_bottom = 362.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/outline_size = 22
+theme_override_fonts/font = ExtResource("14_wxwew")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxTexture_vvhu1")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_raj38")
+theme_override_styles/hover = SubResource("StyleBoxTexture_lbihj")
+text = "EXIT"
+
+[node name="GameOver" type="TextureRect" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = -38.0
+offset_top = -108.0
+offset_right = 854.6204
+offset_bottom = 60.99124
+scale = Vector2(0.5680768, 0.5680768)
+texture = ExtResource("3_8r6kd")
+
+[node name="LabelTextMedal" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 32.0
+offset_right = 190.0
+offset_bottom = 72.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/outline_size = 13
+theme_override_fonts/font = ExtResource("4_rajel")
+theme_override_font_sizes/font_size = 35
+text = "MEDAL"
+horizontal_alignment = 2
+
+[node name="LabelTextScore" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 234.0
+offset_top = 32.0
+offset_right = 380.0
+offset_bottom = 72.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/outline_size = 13
+theme_override_fonts/font = ExtResource("4_rajel")
+theme_override_font_sizes/font_size = 35
+text = "SCORE"
+horizontal_alignment = 2
+
+[node name="LabelScore" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 234.0
+offset_top = 69.0
+offset_right = 380.0
+offset_bottom = 141.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 13
+theme_override_fonts/font = ExtResource("4_rajel")
+theme_override_font_sizes/font_size = 64
+text = "0"
+horizontal_alignment = 2
+
+[node name="LabelTextBest" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 234.0
+offset_top = 143.0
+offset_right = 380.0
+offset_bottom = 183.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0.9764706, 0.85882354, 0.38039216, 1)
+theme_override_constants/outline_size = 13
+theme_override_fonts/font = ExtResource("4_rajel")
+theme_override_font_sizes/font_size = 35
+text = "BEST"
+horizontal_alignment = 2
+
+[node name="LabelBest" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 234.0
+offset_top = 181.0
+offset_right = 380.0
+offset_bottom = 253.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 13
+theme_override_fonts/font = ExtResource("4_rajel")
+theme_override_font_sizes/font_size = 64
+text = "0"
+horizontal_alignment = 2
+
+[node name="TextureRectMedal" type="TextureRect" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 96.0
+offset_right = 163.0
+offset_bottom = 215.0
+texture = ExtResource("5_vvhu1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/TextureRectGameOver"]
+libraries = {
+&"": SubResource("AnimationLibrary_lbihj")
+}
+
+[node name="Label" type="Label" parent="CanvasLayer/TextureRectGameOver"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 231.0
+offset_right = 210.0
+offset_bottom = 267.0
+theme_override_colors/font_color = Color(0.24115604, 0.24115604, 0.24115604, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_fonts/font = SubResource("SystemFont_i0vto")
+theme_override_font_sizes/font_size = 10
+text = "Assets: Kenney (CC0)
+Developed by PAREIN J.P"
+vertical_alignment = 2
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -5
+material = SubResource("ShaderMaterial_j5yw3")
+position = Vector2(639, 360.16888)
+scale = Vector2(1.6, 1.5007036)
+texture = ExtResource("1_iukft")
+script = ExtResource("3_j5yw3")
+
+[node name="GroundDirt" type="Sprite2D" parent="." groups=["obstacle"]]
+z_index = 2
+material = SubResource("ShaderMaterial_71axn")
+position = Vector2(644, 689)
+scale = Vector2(1.6241634, 0.9002814)
+texture = ExtResource("4_71axn")
+script = ExtResource("3_j5yw3")
+scroll_speed = 0.4
+
+[node name="Area2D" type="Area2D" parent="GroundDirt" groups=["obstacle"]]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="GroundDirt/Area2D"]
+visible = false
+polygon = PackedVector2Array(-1.2314148, 36.224487, -403.28455, 34.775513, -404.51596, 2.173462, -370.03668, -1.4489746, -363.26395, 6.5204163, -318.93344, 10.86734, -269.0616, -2.173462, -247.51205, -27.53061, -157.61961, -30.428589, -98.51227, -9.4183655, -52.334625, -8.693878, -32.63217, -21.010223, 31.400787, -21.73471, 65.880066, 8.693878, 101.59076, 9.4183655, 128.06592, 19.561218, 168.08655, 19.561218, 192.09888, -5.0714417, 232.73523, -12.316345, 254.28479, -30.428589, 341.0987, -33.326538, 360.18542, -10.142853, 397.12756, 0, 397.12756, 36.224487)
+
+[node name="Plane" type="CharacterBody2D" parent="."]
+texture_filter = 6
+position = Vector2(218, 352)
+scale = Vector2(1.4, 1.4)
+script = ExtResource("4_fgofq")
+gravity_force = 1800.0
+flap_strength = -700.0
+max_angle_up = -0.15
+max_angle_down = 0.15
+medals = Array[Texture2D]([ExtResource("12_8e0uq"), ExtResource("13_i0vto"), ExtResource("14_3jf1l")])
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane"]
+visible = false
+position = Vector2(1.4285736, -3.5714264)
+rotation = 1.5707964
+scale = Vector2(0.99999976, 0.99999976)
+shape = SubResource("CapsuleShape2D_wxwew")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Plane"]
+z_index = 1
+sprite_frames = SubResource("SpriteFrames_bf53h")
+animation = &"Fly"
+autoplay = "Fly"
+frame_progress = 0.69921625
+
+[node name="Tap" type="Node2D" parent="Plane"]
+
+[node name="Right" type="Sprite2D" parent="Plane/Tap"]
+position = Vector2(100, 0)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("9_3so38")
+
+[node name="Left" type="Sprite2D" parent="Plane/Tap"]
+position = Vector2(-100, 0)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("10_3cx6b")
+
+[node name="Tick" type="Sprite2D" parent="Plane/Tap"]
+position = Vector2(1.6666666, 93.33333)
+texture = ExtResource("11_3cx6b")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Plane/Tap/Tick"]
+libraries = {
+&"": SubResource("AnimationLibrary_acvyw")
+}
+autoplay = "Blink"
+
+[node name="Get Ready" type="Sprite2D" parent="Plane/Tap"]
+position = Vector2(8.571424, -87.85715)
+scale = Vector2(0.5587085, 0.5587085)
+texture = ExtResource("21_i0vto")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Plane/Tap"]
+libraries = {
+&"": SubResource("AnimationLibrary_356ba")
+}
+autoplay = "Getready"
+
+[node name="Area2D" type="Area2D" parent="Plane"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane/Area2D"]
+visible = false
+position = Vector2(1.4285736, -3.5714264)
+rotation = 1.5707964
+scale = Vector2(0.99999964, 0.99999964)
+shape = SubResource("CapsuleShape2D_wxwew")
+
+[node name="CPUParticles2DExplosion" type="CPUParticles2D" parent="Plane"]
+emitting = false
+amount = 80
+lifetime = 3.88
+one_shot = true
+speed_scale = 1.79
+explosiveness = 1.0
+lifetime_randomness = 0.05
+emission_shape = 1
+emission_sphere_radius = 57.75
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 198.11
+initial_velocity_max = 716.98
+scale_amount_min = 4.0
+scale_amount_max = 12.0
+color = Color(0.9411765, 0.78039217, 0.18431373, 1)
+
+[node name="Spawner" type="Node2D" parent="." node_paths=PackedStringArray("my_timer", "score_label")]
+position = Vector2(1376, 359)
+script = ExtResource("8_2irst")
+my_timer = NodePath("Timer")
+scene_to_spawn = ExtResource("9_bf53h")
+offset_Y = 120.0
+score_label = NodePath("../CanvasLayer/LabelScore")
+
+[node name="Timer" type="Timer" parent="Spawner"]
+wait_time = 1.6
+
+[node name="Sfx_sound" type="AudioStreamPlayer" parent="."]
+script = ExtResource("16_alh3a")
+sfx_jump = ExtResource("25_i0vto")
+sfx_dead = ExtResource("26_3jf1l")
+
+[node name="Area2DTop" type="Area2D" parent="." groups=["obstacle"]]
+position = Vector2(0, -9)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2DTop"]
+position = Vector2(638, -12)
+shape = SubResource("RectangleShape2D_i0vto")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[connection signal="pressed" from="CanvasLayer/TextureRectGameOver/ButtonPlay" to="Plane" method="_on_button_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/TextureRectGameOver/ButtonExit" to="Plane" method="_on_button_exit_pressed"]
+[connection signal="area_entered" from="Plane/Area2D" to="Spawner" method="_on_area_2d_area_entered"]

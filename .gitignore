@@ -1,0 +1,17 @@
+# Godot
+.godot/
+.import/
+.export/
+
+# Android (Godot 4.5)
+android/local.properties
+android/.gradle/
+android/build/.gradle/
+android/build/intermediates/
+android/build/outputs/
+android/build/tmp/
+android/build/libs/
+
+# Divers
+*.tmp
+compilation/
