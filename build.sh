@@ -21,23 +21,29 @@ mkdir -p "${APK_OUT_DIR}" "${AAR_DST_DIR}"
 # 0) Dépendances pour le runner F-Droid
 export DEBIAN_FRONTEND=noninteractive
 echo "[0/3] Vérification des dépendances SCons..."
-if ! command -v scons >/dev/null 2>&1; then
-  echo "SCons non trouvé. Installation via apt-get..."
+if ! command -v scons >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
+  echo "SCons ou Python non trouvé. Installation via apt-get..."
   apt-get update -qq
-  apt-get install -y -qq scons python3
+  # Installation de scons, python3 et d'un paquet python souvent nécessaire (distutils)
+  apt-get install -y -qq scons python3 python3-distutils
 fi
 
-# >>> Rétablissement de l'exportation explicite :
-# Gradle, dans son sous-processus de compilation Godot, n'hérite pas correctement le PATH.
+# >>> Rétablissement et ajustement de l'exportation explicite :
+# Nous exportons le chemin du binaire ET le chemin du répertoire parent pour maximiser la visibilité dans Gradle.
 SCONS_BIN="$(command -v scons || true)"
 if [ -z "${SCONS_BIN}" ]; then
   echo "ERREUR: scons introuvable après vérification du PATH." >&2
   exit 1
 fi
+
+SCONS_DIR="$(dirname "${SCONS_BIN}")"
+
 echo "SCons est disponible à: ${SCONS_BIN}"
-# Exportation explicite du chemin complet pour être sûr que Gradle le voit.
+# Exportation explicite :
 export SCONS="${SCONS_BIN}" 
 export SCONS_EXECUTABLE="${SCONS_BIN}" 
+# Ajout de SCONS_PATH pointant vers le répertoire (une convention Godot)
+export SCONS_PATH="${SCONS_DIR}"
 
 
 # 1) Sources Godot
@@ -56,7 +62,6 @@ echo "[2/3] Build godot-lib.aar (release)..."
 pushd "${GODOT_SRC_DIR}/platform/android/java" >/dev/null
   chmod +x gradlew
   # Le wrapper de Godot est OK
-  # Suppression de --no-daemon pour Godot, car Gradle W. est plus fiable.
   ./gradlew :lib:assembleRelease --no-daemon
   AAR_BUILT="lib/build/outputs/aar/lib-release.aar"
   test -f "${AAR_BUILT}" || { echo "ERREUR: AAR introuvable (${AAR_BUILT})"; exit 1; }
