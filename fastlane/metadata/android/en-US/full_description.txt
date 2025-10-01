@@ -1,0 +1,3 @@
+AeroTap is a small arcade game created with Godot Engine.
+• Simple gameplay
+• No trackers, no Google Play Services
