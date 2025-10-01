@@ -3,35 +3,42 @@ set -euo pipefail
 
 ###
 # build.sh — F-Droid
-# - Installe scons si absent (requis par la build Android de Godot)
-# - Construit godot-lib.aar depuis les sources de Godot
-# - Construit l'APK de l'app en utilisant Gradle système (pas le wrapper supprimé par F-Droid)
-# - Dépose l'APK final en: build/Aerotap.apk (conforme à ta metadata)
+# - Installe scons (et python3) si absent
+# - Exporte SCONS/SCONS_PATH pour Gradle (Godot)
+# - Construit godot-lib.aar
+# - Construit l’APK avec Gradle système
+# - Dépose build/Aerotap.apk
 ###
 
-# ----------------------- Réglages -----------------------
-APP_NAME="Aerotap"                             # nom du fichier apk final
-APK_OUT_DIR="build"                            # dossier de sortie attendu par F-Droid
-AAR_DST_DIR="android/build/libs/release"       # où ton app cherche l'AAR (flatDir)
+APP_NAME="Aerotap"
+APK_OUT_DIR="build"
+AAR_DST_DIR="android/build/libs/release"
 GODOT_SRC_DIR="godot-src"
-
-# Référence Godot à utiliser (même commit que dans tes logs)
-# Tu peux remplacer par '4.5-stable' si tu préfères le tag:
+# même révision que celle utilisée dans tes logs
 GODOT_REF="876b290332ec6f2e6d173d08162a02aa7e6ca46d"
 
-# ------------------- Préparation env -------------------
 mkdir -p "${APK_OUT_DIR}" "${AAR_DST_DIR}"
 
+# 0) Dépendances pour le runner F-Droid
 export DEBIAN_FRONTEND=noninteractive
 if ! command -v scons >/dev/null 2>&1; then
-  echo ">> Install scons (requis par Godot)"
   apt-get update -qq
-  apt-get install -y -qq scons
+  apt-get install -y -qq scons python3
 fi
 
-# ----------------- 1) Récup Godot src ------------------
+# >>> IMPORTANT : donner le chemin de scons à Gradle (Godot)
+SCONS_BIN="$(command -v scons || true)"
+if [ -z "${SCONS_BIN}" ]; then
+  echo "ERREUR: scons introuvable après installation" >&2
+  exit 1
+fi
+export SCONS="${SCONS_BIN}"
+export SCONS_PATH="${SCONS_BIN}"
+# (Godot accepte l’une ou l’autre, on met les deux)
+
+# 1) Sources Godot
 if [ ! -d "${GODOT_SRC_DIR}" ]; then
-  echo "[1/3] Clone Godot sources..."
+  echo "[1/3] Clone Godot sources…"
   git clone https://github.com/godotengine/godot.git "${GODOT_SRC_DIR}"
 fi
 pushd "${GODOT_SRC_DIR}" >/dev/null
@@ -39,12 +46,12 @@ pushd "${GODOT_SRC_DIR}" >/dev/null
   git checkout -f "${GODOT_REF}"
 popd >/dev/null
 
-# ------------- 2) Build godot-lib.aar ------------------
-echo "[2/3] Build godot-lib.aar (release)..."
+# 2) Build de l’AAR Godot
+echo "[2/3] Build godot-lib.aar (release)…"
 pushd "${GODOT_SRC_DIR}/platform/android/java" >/dev/null
-  # Le wrapper Gradle de Godot (PAS celui de ton app) est OK
   chmod +x gradlew
-  ./gradlew :lib:assembleRelease
+  # le wrapper de Godot est OK
+  ./gradlew :lib:assembleRelease --no-daemon
   AAR_BUILT="lib/build/outputs/aar/lib-release.aar"
   test -f "${AAR_BUILT}" || { echo "ERREUR: AAR introuvable (${AAR_BUILT})"; exit 1; }
 popd >/dev/null
@@ -53,10 +60,8 @@ echo ">> Copie AAR -> ${AAR_DST_DIR}/godot-lib.aar"
 cp -f "${GODOT_SRC_DIR}/platform/android/java/${AAR_BUILT}" \
       "${AAR_DST_DIR}/godot-lib.aar"
 
-# --------------- 3) Build APK de l'app -----------------
-echo "[3/3] Build APK (release)..."
-# F-Droid supprime android/build/gradle/wrapper/gradle-wrapper.jar,
-# donc on évite ./gradlew ici et on utilise Gradle système.
+# 3) Build APK de l’app (sans wrapper supprimé par F-Droid)
+echo "[3/3] Build APK (release)…"
 if command -v gradle >/dev/null 2>&1; then
   gradle -p android/build assembleRelease --no-daemon
 else
@@ -67,9 +72,8 @@ else
   popd >/dev/null
 fi
 
-# -------------- 4) Récup l'APK généré ------------------
+# 4) Récupération de l’APK
 FOUND_APK="$(find android/build/app/build/outputs/apk -type f -name '*release*.apk' | head -n 1 || true)"
-
 if [ -n "${FOUND_APK}" ]; then
   cp -f "${FOUND_APK}" "${APK_OUT_DIR}/${APP_NAME}.apk"
   echo "OK -> APK: ${APK_OUT_DIR}/${APP_NAME}.apk"
