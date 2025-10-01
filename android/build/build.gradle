@@ -8,28 +8,22 @@ apply from: 'config.gradle'
 
 allprojects {
     repositories {
+        // Dépôts autorisés par F-Droid
         google()
         mavenCentral()
-        gradlePluginPortal()
-        maven { url "https://plugins.gradle.org/m2/" }
-        maven { url "https://central.sonatype.com/repository/maven-snapshots/"}
 
-        // Godot user plugins custom maven repos
-        String[] mavenRepos = getGodotPluginsMavenRepos()
-        if (mavenRepos != null && mavenRepos.size() > 0) {
-            for (String repoUrl : mavenRepos) {
-                maven {
-                    url repoUrl
-                }
-            }
+        // Charge les AAR locaux (à déposer dans android/build/libs/…)
+        flatDir {
+            dirs 'libs', 'libs/debug', 'libs/dev', 'libs/release'
         }
+
+        // ❌ SUPPRIMÉ: gradlePluginPortal / plugins.gradle.org / sonatype snapshots
+        // ❌ SUPPRIMÉ: boucle maven { url repoUrl } des plugins Godot
     }
 }
 
 configurations {
-    // Initializes a placeholder for the devImplementation dependency configuration.
     devImplementation {}
-    // Initializes a placeholder for the monoImplementation dependency configuration.
     monoImplementation {}
 }
 
@@ -42,14 +36,13 @@ dependencies {
     } else if (rootProject.findProject(":godot:lib")) {
         implementation project(":godot:lib")
     } else {
-        // Godot gradle build mode. In this scenario this project is the only one around and the Godot
-        // library is available through the pre-generated godot-lib.*.aar android archive files.
-        debugImplementation fileTree(dir: 'libs/debug', include: ['**/*.jar', '*.aar'])
-        devImplementation fileTree(dir: 'libs/dev', include: ['**/*.jar', '*.aar'])
+        // Godot gradle build mode: on charge les AAR locaux
+        debugImplementation   fileTree(dir: 'libs/debug',   include: ['**/*.jar', '*.aar'])
+        devImplementation     fileTree(dir: 'libs/dev',     include: ['**/*.jar', '*.aar'])
         releaseImplementation fileTree(dir: 'libs/release', include: ['**/*.jar', '*.aar'])
     }
 
-    // Godot user plugins remote dependencies
+    // Godot user plugins remote dependencies (ok si vides)
     String[] remoteDeps = getGodotPluginsRemoteBinaries()
     if (remoteDeps != null && remoteDeps.size() > 0) {
         for (String dep : remoteDeps) {
@@ -95,7 +88,6 @@ android {
     namespace = 'com.godot.game'
 
     defaultConfig {
-        // The default ignore pattern for the 'assets' directory includes hidden files and directories which are used by Godot projects.
         aaptOptions {
             ignoreAssetsPattern "!.svn:!.git:!.gitignore:!.ds_store:!*.scc:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
         }
@@ -106,7 +98,6 @@ android {
             abiFilters export_abi_list
         }
 
-        // Feel free to modify the application id to your own.
         applicationId getExportPackageName()
         versionCode getExportVersionCode()
         versionName getExportVersionName()
@@ -127,22 +118,14 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
 
-        // Debug symbols are kept for development within Android Studio.
         if (shouldNotStrip()) {
-            jniLibs {
-                keepDebugSymbols += '**/*.so'
-            }
+            jniLibs { keepDebugSymbols += '**/*.so' }
         }
 
         jniLibs {
-            // Setting this to true causes AGP to package compressed native libraries when building the app
-            // For more background, see:
-            // - https://developer.android.com/build/releases/past-releases/agp-3-6-0-release-notes#extractNativeLibs
-            // - https://stackoverflow.com/a/44704840
             useLegacyPackaging shouldUseLegacyPackaging()
         }
 
-        // Always select Godot's version of libc++_shared.so in case deps have their own
         pickFirst 'lib/x86/libc++_shared.so'
         pickFirst 'lib/x86_64/libc++_shared.so'
         pickFirst 'lib/armeabi-v7a/libc++_shared.so'
@@ -158,7 +141,6 @@ android {
                 keyPassword getDebugKeystorePassword()
             }
         }
-
         release {
             File keystoreFile = new File(getReleaseKeystoreFile())
             if (keystoreFile.isFile()) {
@@ -170,55 +152,16 @@ android {
         }
     }
 
-    buildFeatures {
-        buildConfig = true
-    }
+    buildFeatures { buildConfig = true }
 
     buildTypes {
-
-        debug {
-            // Signing and zip-aligning are skipped for prebuilt builds, but
-            // performed for Godot gradle builds.
-            zipAlignEnabled shouldZipAlign()
-            if (shouldSign()) {
-                signingConfig signingConfigs.debug
-            } else {
-                signingConfig null
-            }
-        }
-
-        dev {
-            initWith debug
-            // Signing and zip-aligning are skipped for prebuilt builds, but
-            // performed for Godot gradle builds.
-            zipAlignEnabled shouldZipAlign()
-            if (shouldSign()) {
-                signingConfig signingConfigs.debug
-            } else {
-                signingConfig null
-            }
-        }
-
-        release {
-            // Signing and zip-aligning are skipped for prebuilt builds, but
-            // performed for Godot gradle builds.
-            zipAlignEnabled shouldZipAlign()
-            if (shouldSign()) {
-                signingConfig signingConfigs.release
-            } else {
-                signingConfig null
-            }
-        }
+        debug   { zipAlignEnabled shouldZipAlign(); signingConfig shouldSign() ? signingConfigs.debug   : null }
+        dev     { initWith debug; zipAlignEnabled shouldZipAlign(); signingConfig shouldSign() ? signingConfigs.debug : null }
+        release { zipAlignEnabled shouldZipAlign(); signingConfig shouldSign() ? signingConfigs.release : null }
     }
 
     flavorDimensions 'edition'
-
-    productFlavors {
-        standard {
-            getIsDefault().set(true)
-        }
-        mono {}
-    }
+    productFlavors { standard { getIsDefault().set(true) } mono {} }
 
     sourceSets {
         main {
@@ -242,9 +185,6 @@ android {
 }
 
 task copyAndRenameBinary(type: Copy) {
-    // The 'doNotTrackState' is added to disable gradle's up-to-date checks for output files
-    // and directories. Otherwise this check may cause permissions access failures on Windows
-    // machines.
     doNotTrackState("No need for up-to-date checks for the copy-and-rename operation")
 
     String exportPath = getExportPath()
@@ -269,19 +209,12 @@ task copyAndRenameBinary(type: Copy) {
     rename sourceFilename, exportFilename
 }
 
-/**
- * Used to validate the version of the Java SDK used for the Godot gradle builds.
- */
 task validateJavaVersion {
     if (!JavaVersion.current().isCompatibleWith(versions.javaVersion)) {
         throw new GradleException("Invalid Java version ${JavaVersion.current()}. Version ${versions.javaVersion} is the minimum supported Java version for Godot gradle builds.")
     }
 }
 
-/*
-When they're scheduled to run, the copy*AARToAppModule tasks generate dependencies for the 'app'
-module, so we're ensuring the ':app:preBuild' task is set to run after those tasks.
- */
 if (rootProject.tasks.findByPath("copyDebugAARToAppModule") != null) {
     preBuild.mustRunAfter(rootProject.tasks.named("copyDebugAARToAppModule"))
 }
