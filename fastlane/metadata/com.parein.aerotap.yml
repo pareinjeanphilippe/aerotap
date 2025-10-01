@@ -1,0 +1,31 @@
+Categories:
+  - Games
+License: MIT
+SourceCode: https://github.com/pareinjeanphilippe/aerotap
+IssueTracker: https://github.com/pareinjeanphilippe/aerotap/issues
+Changelog: https://github.com/pareinjeanphilippe/aerotap/releases
+AutoName: AeroTap
+Summary: Tiny open-source arcade game
+Description: |-
+  AeroTap is a small arcade game made with Godot Engine.
+  • Simple gameplay
+  • No trackers, no Google Play Services
+
+# Build depuis ton tag GitHub
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    subdir: .
+    gradle:
+      - yes
+    gradleprops:
+      - export_package_name=com.parein.aerotap
+      - versionName=1.0.0
+      - versionCode=1
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1
